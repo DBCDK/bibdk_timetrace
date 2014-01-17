@@ -25,9 +25,11 @@ class BibdkTimeTraceTestCase extends DrupalWebTestCase {
   }
 
   /**
-   * Perform a search 
+   * Test that trace is logged in watchdog, and that last entry is
+   * bigger than the previous
    */
   public function testSearch() {
+    // do a search
     $this->drupalGet('/search/work/hest');
     
     // get last log entries from watchdog
