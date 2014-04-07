@@ -30,7 +30,7 @@ class BibdkTimeTraceTestCase extends DrupalWebTestCase {
    */
   public function testSearch() {
     // do a search
-    $this->drupalGet('/search/work/hest');
+    $this->drupalGet('search/work/hest');
     
     // get last log entries from watchdog
     $result = db_query("SELECT message FROM {watchdog} WHERE type='TRACKING' order by timestamp desc limit 4");
