@@ -3,7 +3,7 @@
 
 simpletest :
 # DrupalUnitTestCase and DrupalWebTestCase
-- name : BibdkTimeTraceTestCase
+- name : NetpunktTimeTraceTestCase
   path : test/simpletest/netpunkt_timetrace.test
 # - name : <test suite>
 #   path :
