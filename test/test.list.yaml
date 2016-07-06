@@ -4,7 +4,7 @@
 simpletest :
 # DrupalUnitTestCase and DrupalWebTestCase
 - name : BibdkTimeTraceTestCase
-  path : bibdk_timetrace.test
+  path : test/simpletest/netpunkt_timetrace.test
 # - name : <test suite>
 #   path :
 #     Path to file, if different from default path, and named different than <test suite>.test
