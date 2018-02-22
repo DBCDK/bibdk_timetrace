@@ -16,7 +16,7 @@ class NetpunktTimeTraceTestCase extends DrupalWebTestCase {
   }
 
   public function setUp() {
-    parent::setUp('bib_open_format_search','bibdk_timetrace', 'netpunkt_webservice_test_settings', 'netpunkt_brief', 'features');
+    parent::setUp('bib_open_format_search','bibdk_timetrace','netpunkt_frontend', 'netpunkt_webservice_test_settings', 'netpunkt_brief', 'features');
     variable_set('search_active_modules', array('bib_open_format_search' => 'bib_open_format_search'));
     variable_set('search_default_module', 'bib_open_format_search');
     user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access content', 'search content'));
