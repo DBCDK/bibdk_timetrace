@@ -15,7 +15,7 @@ class NetpunktTimeTraceTestCase extends DrupalWebTestCase {
   }
 
   public function setUp() {
-    parent::setUp('bib_open_format_search','bibdk_timetrace','netpunkt_composer', 'netpunkt_webservice_test_settings', 'netpunkt_brief', 'features');
+    parent::setUp(array('bib_open_format_search','bibdk_timetrace','netpunkt_composer', 'netpunkt_webservice_test_settings', 'netpunkt_brief', 'features'));
     variable_set('search_active_modules', array('bib_open_format_search' => 'bib_open_format_search'));
     variable_set('search_default_module', 'bib_open_format_search');
     user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access content', 'search content'));
@@ -33,14 +33,13 @@ class NetpunktTimeTraceTestCase extends DrupalWebTestCase {
 
     // get last log entries from watchdog
 
-    $result = db_select('watchdog', 'w')
+    $data = db_select('watchdog', 'w')
       ->fields('w', array('message'))
       ->condition('type', 'TRACKING')
       ->orderBy('timestamp', 'DESC')
       ->range(0, 4)
-      ->execute();
-
-    $data = $result->fetchAll();
+      ->execute()
+      ->fetchAll();
 
     // assert that results were found (there must be at least 2)
     $this->assertTrue(
@@ -59,8 +58,6 @@ class NetpunktTimeTraceTestCase extends DrupalWebTestCase {
     // make a date from the two
     $date1 = strtotime($time1);
     $date2 = strtotime($time2);
-
-    $this->verbose($time1 . " " . $time2);
 
     // assert that 2 is smaller than 1
     $this->assertTrue($date2 < $date1);
