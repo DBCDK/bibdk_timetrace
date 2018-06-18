@@ -1,5 +1,4 @@
 <?php
-
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -33,11 +32,22 @@ class NetpunktTimeTraceTestCase extends DrupalWebTestCase {
     $this->drupalGet('search/work/hest');
 
     // get last log entries from watchdog
-    $result = db_query("SELECT message FROM {watchdog} WHERE type='TRACKING' order by timestamp desc limit 4");
+
+    $result = db_select('watchdog', 'w')
+      ->fields('w', array('message'))
+      ->condition('type', 'TRACKING')
+      ->orderBy('timestamp', 'DESC')
+      ->range(0, 4)
+      ->execute();
+
     $data = $result->fetchAll();
 
     // assert that results were found (there must be at least 2)
-    $this->assertTrue(count($data)>=2,'found two or more TRACKING log-entries in watchdog');
+    $this->assertTrue(
+      count($data)>=2,
+      'found two or more TRACKING log-entries in watchdog'
+    );
+
     // get the last 2 results
     $no1 = $data[0]->message;
     $no2 = $data[1]->message;
@@ -49,6 +59,8 @@ class NetpunktTimeTraceTestCase extends DrupalWebTestCase {
     // make a date from the two
     $date1 = strtotime($time1);
     $date2 = strtotime($time2);
+
+    $this->verbose($time1 . " " . $time2);
 
     // assert that 2 is smaller than 1
     $this->assertTrue($date2 < $date1);
