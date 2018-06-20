@@ -1,5 +1,4 @@
 <?php
-
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -16,7 +15,10 @@ class NetpunktTimeTraceTestCase extends DrupalWebTestCase {
   }
 
   public function setUp() {
-    parent::setUp('bib_open_format_search','bibdk_timetrace','netpunkt_composer', 'netpunkt_webservice_test_settings', 'netpunkt_brief', 'features');
+    parent::setUp(array(
+      'bib_open_format_search','bibdk_timetrace', 'features', 'netpunkt_provider',
+      'netpunkt_webservice_test_settings', 'netpunkt_brief','netpunkt_composer')
+    );
     variable_set('search_active_modules', array('bib_open_format_search' => 'bib_open_format_search'));
     variable_set('search_default_module', 'bib_open_format_search');
     user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access content', 'search content'));
@@ -33,11 +35,21 @@ class NetpunktTimeTraceTestCase extends DrupalWebTestCase {
     $this->drupalGet('search/work/hest');
 
     // get last log entries from watchdog
-    $result = db_query("SELECT message FROM {watchdog} WHERE type='TRACKING' order by timestamp desc limit 4");
-    $data = $result->fetchAll();
+
+    $data = db_select('watchdog', 'w')
+      ->fields('w', array('message'))
+      ->condition('type', 'TRACKING')
+      ->orderBy('timestamp', 'DESC')
+      ->range(0, 4)
+      ->execute()
+      ->fetchAll();
 
     // assert that results were found (there must be at least 2)
-    $this->assertTrue(count($data)>=2,'found two or more TRACKING log-entries in watchdog');
+    $this->assertTrue(
+      count($data)>=2,
+      'found two or more TRACKING log-entries in watchdog'
+    );
+
     // get the last 2 results
     $no1 = $data[0]->message;
     $no2 = $data[1]->message;
