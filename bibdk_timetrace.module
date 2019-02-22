@@ -2,29 +2,40 @@
 
 /** A module to log time for start of request (hook_boot) to end of request (hook_exit)
  * sofar only search-requests are tracked, but feel free to track some more
- * 
+ *
  * WATCHDOG output :
  * SERVICE_PREFIX::TRACKINGID::OPERATION::METHOD_[END,START]::TIMESTAMP
- * 
+ *
  * EXAMPLE:
  * BIBDK_GUI::2014-01-16T14:18:35:985027:9895::SEARCH::GET_END::2014-01-16T14:18:42:667730
  * BIBDK_GUI::2014-01-16T14:18:35:985027:9895::SEARCH::GET_START::2014-01-16T14:18:40:769062
  * BIBDK_GUI::2014-01-16T14:18:35:985027:9895::SEARCH::POST_END::2014-01-16T14:18:40:550547
  * BIBDK_GUI::2014-01-16T14:18:35:985027:9895::SEARCH::POST_START::2014-01-16T14:18:35:985049
- * 
+ *
  */
 
-DEFINE('SERVICE_PREFIX', 'BIBDK_GUI');
+DEFINE('SERVICE_PREFIX', 'NETPUNKT_GUI');
+
+/**
+ * We renamed the search_block_form in netpunkt ..
+ * @return array
+ */
+function bibdk_time_trace_get_search_forms() {
+  return array(
+    'search_block_form',
+    'netpunkt_search_form'
+  );
+}
 
 /**
  * Implements hook_boot
  * log timer for start of request
  */
-function bibdk_timetrace_boot() {  
+function bibdk_timetrace_boot() {
   $path = $_GET['q'];
   //LOG start og POST request
   // check if this is a post from search_block
-  if (!empty($_POST['form_id']) && $_POST['form_id'] == 'search_block_form') {
+  if (!empty($_POST['form_id']) && in_array($_POST['form_id'], bibdk_time_trace_get_search_forms())) {
     // first step in search cycle
     // drupal first does a post and then a redirect (@see search.pages.inc::search_view())
     $tracking_id = bibdk_timetrace_get_trackid();
@@ -38,7 +49,7 @@ function bibdk_timetrace_boot() {
   elseif (strpos($path, 'search/') === 0 || strpos($path, 'da/search/') === 0 || strpos($path, 'eng/search/') === 0 ) {
     // check if this is second part of the search cycle
     if (isset($_SESSION['timetrace']['trackingid'])) {
-      $tracking_id = $_SESSION['timetrace']['trackingid'];      
+      $tracking_id = $_SESSION['timetrace']['trackingid'];
     }
     // this is simply a GET request (search)
     else {
@@ -51,14 +62,13 @@ function bibdk_timetrace_boot() {
 }
 
 /**
- * Implements hook_exit 
+ * Implements hook_exit
  * log timer for end of request
  */
 function bibdk_timetrace_exit() {
   $path = $_GET['q'];
-  
   // LOG end of postrequest
-  if (!empty($_POST['form_id']) && $_POST['form_id'] == 'search_block_form') {
+  if (!empty($_POST['form_id']) && in_array($_POST['form_id'], bibdk_time_trace_get_search_forms())) {
     $tracking_id = $_SESSION['timetrace']['trackingid'];
     $message = SERVICE_PREFIX . '::' . $tracking_id . '::SEARCH::POST_END::' . bibdk_timetrace_get_timestamp();
     watchdog('TRACKING', $message);
@@ -68,7 +78,7 @@ function bibdk_timetrace_exit() {
     $tracking_id = $_SESSION['timetrace']['trackingid'];
     $message = SERVICE_PREFIX . '::' . $tracking_id . '::SEARCH::GET_END::' . bibdk_timetrace_get_timestamp();
     watchdog('TRACKING', $message);
-    
+
     // search has finished - unset $_SESSION params
     unset($_SESSION['timetrace']['trackingid']);
   }
