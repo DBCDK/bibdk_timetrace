@@ -16,7 +16,7 @@ class NetpunktTimeTraceTestCase extends DrupalWebTestCase {
 
   public function setUp() {
     parent::setUp(array(
-      'bib_open_format_search','bibdk_timetrace', 'features', 'netpunkt_provider',
+      'bibdk_custom_search', 'bib_open_format_search','bibdk_timetrace', 'features', 'netpunkt_provider', 'netpunkt_search',
       'netpunkt_webservice_test_settings', 'netpunkt_brief','netpunkt_composer')
     );
     variable_set('search_active_modules', array('bib_open_format_search' => 'bib_open_format_search'));
@@ -32,7 +32,7 @@ class NetpunktTimeTraceTestCase extends DrupalWebTestCase {
    */
   public function testSearch() {
     // do a search
-    $this->drupalGet('search/work/hest');
+    $this->drupalGet('search/work?search_block_form=hest');
 
     // get last log entries from watchdog
 
